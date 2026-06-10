@@ -20,7 +20,7 @@ WhooshingWebSocket 是 Whooshing 系统中的 **WebSocket 客户端封装模块*
 - **ApiWebSocket:** 用于与任意 Whooshing API 子模块建立 WebSocket 连接，需要提供用户认证信息
 - **HttpsWebSocket:** 用于与任意 Whooshing HTTPS 子模块建立 WebSocket 连接
 
-关于模块与子模块，见 [whooshing.toolbox-server](https://github.com/SJJC-Team/whooshing.toolbox-server)
+关于模块与子模块，见 [whooshing.toolbox-server](https://github.com/whooshing-workshop/whooshing.toolbox-server)
 
 -----
 
@@ -29,7 +29,7 @@ WhooshingWebSocket 是 Whooshing 系统中的 **WebSocket 客户端封装模块*
 在你的 Package.swift 加入：
 
 ``` swift
-.package(url: "https://github.com/SJJC-Team/whooshing.toolbox-websocket.git", .upToNextMajor(from: "1.1.2"))
+.package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-websocket.git", .upToNextMajor(from: "1.1.2"))
 ```
 
 并在 target 中添加：
@@ -50,7 +50,7 @@ import WhooshingWebSocket
 
 ##### 创建 WebSocket
 
-对于 **ApiWebSocket**，需要提供用户认证信息，包括用户凭据和用户密钥。关于认证机制，见 [whooshing.system-authentication](https://github.com/SJJC-Team/whooshing.system-authentication)
+对于 **ApiWebSocket**，需要提供用户认证信息，包括用户凭据和用户密钥。关于认证机制，见 [whooshing.system-authentication](https://github.com/whooshing-workshop/whooshing.system-authentication)
 
 ```swift
 let socket = ApiWebSocket(credential: "bRRPIiYbt0t4RzfqeeHSkg==", token: "jXTz4vTQk0O/XFIjWQIHLC7z9/E0/4VtEb+LkF8IcA4=", eventLoop: eventLoop, logger: logger)
@@ -126,6 +126,6 @@ try await socket.connect(to: WebURI("ws://localhost:8080/echo")) { ws in
 
 ### 联系与反馈
 
-如有使用问题或建议，请通过 [GitHub Issues](https://github.com/SJJC-Team/whooshing.toolbox-websocket/issues) 提交反馈。
+如有使用问题或建议，请通过 [GitHub Issues](https://github.com/whooshing-workshop/whooshing.toolbox-websocket/issues) 提交反馈。
 
 或发至邮箱 [contact@official.whooshings.space](mailto:contact@official.whooshings.space)
