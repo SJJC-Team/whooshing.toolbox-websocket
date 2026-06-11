@@ -16,7 +16,7 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
         case requestEncryptFailed = "对请求加密时发生错误"
     }
     
-    let key: Crypto.Symm.Key
+    let key: SendableSymmKey
     let logger: Logger?
     
     /// 发送请求时，进行编码并加密
@@ -28,7 +28,7 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
                 "client_addr": .string(loopBound.value.channel.clientAddrInfo)
             ])
             return try required(throws: Errcase.requestEncryptFailed) {
-                try loopBound.value.channel.allocator.buffer(data: Crypto.Symm.encrypt(dataChunk, key: key).get())
+                try loopBound.value.channel.allocator.buffer(data: Crypto.Symm.encrypt(dataChunk, key: key.key).get())
             }
         }
     }
@@ -42,7 +42,7 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
                 "client_addr": .string(loopBound.value.channel.clientAddrInfo)
             ])
             return try required(throws: Errcase.responseDecryptFailed) {
-                try Crypto.Symm.decrypt(.init(buffer: dataChunk), key: key).get()
+                try Crypto.Symm.decrypt(.init(buffer: dataChunk), key: key.key).get()
             }
         }
     }
