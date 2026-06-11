@@ -41,4 +41,14 @@ public final class ApiWebSocket: WhooshingWebSocket, Sendable {
         self.logger = client.logger
         self.eventLoop = client.eventLoop
     }
+    
+    @inlinable
+    public func shutdown() async throws {
+        try await client.shutdown()
+    }
+    
+    @inlinable
+    public func syncShutdown() throws {
+        try client.syncShutdown()
+    }
 }

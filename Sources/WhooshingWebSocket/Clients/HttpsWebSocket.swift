@@ -61,4 +61,10 @@ public final class HttpsWebSocket: WhooshingWebSocket, Sendable {
         
         logger?.info("连线建立成功")
     }
+    
+    @inlinable
+    public func shutdown() async throws {}
+    
+    @inlinable
+    public func syncShutdown() throws {}
 }

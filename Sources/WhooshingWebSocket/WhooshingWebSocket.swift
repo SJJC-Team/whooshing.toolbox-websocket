@@ -71,7 +71,8 @@ public protocol WhooshingWebSocket: AnyObject, Sendable {
     ///   - configuration: WebSocket 配置项。
     ///   - onUpgrade: 成功建立连接时的回调，提供 WebSocket 对象。
     /// - Returns: 一个标识连接完成的 Future。
-    @preconcurrency func connect(
+    @preconcurrency
+    func connect(
         to url: WebURI,
         headers: HTTPHeaders,
         on eventLoop: any EventLoop,
@@ -86,12 +87,17 @@ public protocol WhooshingWebSocket: AnyObject, Sendable {
     ///   - configuration: WebSocket 配置。
     ///   - onUpgrade: 成功建立连接时的回调。
     /// - Throws: 请求过程中可能抛出的错误。
-    @preconcurrency func connect(
+    @preconcurrency
+    func connect(
         to url: WebURI,
         headers: HTTPHeaders,
         configuration: WebSocketClient.Configuration,
         onUpgrade: @Sendable @escaping (WebSocket) -> ()
     ) async throws(Failure)
+    
+    func shutdown() async throws
+    
+    func syncShutdown() throws
 }
 
 /// 定义 WebSocket 相关的错误类型。
@@ -150,7 +156,7 @@ extension WhooshingWebSocket {
             try await client.get(uri)
         }
         guard res.status == .switchingProtocols else {
-            throw Errcase.pingFailed.d("预期为 \(HTTPResponseStatus.switchingProtocols)), 却得到 \(res.status))")
+            throw Errcase.pingFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)").metadata(["status_code": .stringConvertible(res.status)])
         }
     }
     
@@ -167,7 +173,7 @@ extension WhooshingWebSocket {
         }
 
         guard upgradeRes.status == .switchingProtocols else {
-            throw Errcase.upgradeFailed.d("预期为 \(HTTPResponseStatus.switchingProtocols)), 却得到 \(upgradeRes.status)")
+            throw Errcase.upgradeFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)").metadata(["status_code": .stringConvertible(upgradeRes.status)])
         }
     }
 
