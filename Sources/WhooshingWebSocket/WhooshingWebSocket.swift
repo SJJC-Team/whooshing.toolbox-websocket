@@ -1,6 +1,7 @@
 import WhooshingClient
 import ErrorHandle
 import Logging
+import LoggingAdvanced
 import Cryptos
 import NIOCore
 import NIOHTTP1
@@ -133,11 +134,11 @@ public extension WhooshingWebSocket {
     ) async throws(Failure) {
         let httpURI = WebURI(scheme: .http, host: url.host, port: url.port, path: url.path, query: url.query, fragment: url.fragment)
         
-        self.logger?.debug("\(Self.loggerLabel)-正在第一次 ping 以建立连接: \(httpURI)")
+        self.logger?.debug("\(Self.loggerLabel)-正在第一次 ping 以建立连接", metadata: ["url": .data(httpURI)])
         try await self.firstPing(uri: httpURI)
-        self.logger?.debug("\(Self.loggerLabel)-发送 WebSocket Upgrade 请求: \(httpURI)")
+        self.logger?.debug("\(Self.loggerLabel)-发送 WebSocket Upgrade 请求", metadata: ["url": .data(httpURI), "headers": .stringConvertible(headers)])
         try await self.upgradeReq(uri: httpURI, headers: headers)
-        self.logger?.debug("\(Self.loggerLabel)-升级为 WebSocket 通道请求: \(url)")
+        self.logger?.debug("\(Self.loggerLabel)-升级为 WebSocket 通道请求", metadata: ["url": .data(url)])
         try await self.establishWebsocketConnect(configuration: configuration, onUpgrade: onUpgrade)
     }
 }
@@ -183,10 +184,10 @@ extension WhooshingWebSocket {
             throw Errcase.internalFailure.d("密钥不存在")
         }
 
-        let ioHandler = WSCryptoHandler(key: key, logger: logger)
-        let wsHandler = WSHandler(ioHandler: ioHandler, logger: self.logger)
+        let ioHandler = WSCryptoHandler(key: key, logger: self.logger?.derive(subId: "handler.crypto"))
+        let wsHandler = WSHandler(ioHandler: ioHandler, logger: self.logger?.derive(subId: "handler.websocket"))
         
-        self.logger?.trace("\(Self.loggerLabel)-在 TCP Channel 中建立 WebSocket Handler，并移除原有的 Client Handler")
+        self.logger?.debug("\(Self.loggerLabel)-在 TCP Channel 中建立 WebSocket Handler，并移除原有的 Client Handler")
         
         try await required(throws: Errcase.tcpHandlerRemoveFailed) {
             try await client.removeHTTPHandlers().get()

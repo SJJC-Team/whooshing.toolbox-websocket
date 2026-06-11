@@ -9,6 +9,8 @@ import NIOSSL
 import NIOTransportServices
 import Atomics
 import Logging
+import LoggingAdvanced
+import AnyCodable
 
 public final class WebSocketClient: Sendable {
     public enum Error: Swift.Error, LocalizedError {
@@ -22,7 +24,7 @@ public final class WebSocketClient: Sendable {
 
     public typealias EventLoopGroupProvider = NIOEventLoopGroupProvider
 
-    public struct Configuration: Sendable {
+    public struct Configuration: Sendable, CustomStringConvertible, Loggerable {
         public var tlsConfiguration: TLSConfiguration?
         public var maxFrameSize: Int
 
@@ -45,6 +47,15 @@ public final class WebSocketClient: Sendable {
             self.minNonFinalFragmentSize = 0
             self.maxAccumulatedFrameCount = Int.max
             self.maxAccumulatedFrameSize = Int.max
+        }
+        
+        public var description: String {
+            formatJson([
+                "max_frame_size": AnyCodable(maxFrameSize),
+                "min_non_final_fragment_size": AnyCodable(minNonFinalFragmentSize),
+                "max_accumulated_frame_count": AnyCodable(maxAccumulatedFrameCount),
+                "max_accumulated_frame_size": AnyCodable(maxAccumulatedFrameSize)
+            ])
         }
     }
 

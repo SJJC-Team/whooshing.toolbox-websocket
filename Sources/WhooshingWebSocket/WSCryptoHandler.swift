@@ -21,18 +21,26 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
     
     /// 发送请求时，进行编码并加密
     func send(dataChunk: ByteBuffer, context: ChannelHandlerContext) -> EventLoopRes<ByteBuffer, Errcase> {
-        context.eventLoop.submitResult { () throws(Failure) in
-            logger?.trace("API.WS.Client-发送数据中: 大小 \(ChunkTool.formatByteSize(dataChunk.readableBytes)) \(context.channel.clientAddrInfo)")
+        let loopBound = context.loopBound
+        return context.eventLoop.submitResult { () throws(Failure) in
+            logger?.debug("发送数据中，进行加密", metadata: [
+                "data": .stringConvertible(dataChunk),
+                "client_addr": .string(loopBound.value.channel.clientAddrInfo)
+            ])
             return try required(throws: Errcase.requestEncryptFailed) {
-                try context.channel.allocator.buffer(data: Crypto.Symm.encrypt(dataChunk, key: key).get())
+                try loopBound.value.channel.allocator.buffer(data: Crypto.Symm.encrypt(dataChunk, key: key).get())
             }
         }
     }
     
     /// 收到响应时，进行解密并解码
     func get(dataChunk: ByteBuffer, context: ChannelHandlerContext) -> EventLoopRes<ByteBuffer, Errcase> {
-        context.eventLoop.submitResult { () throws(Failure) in
-            logger?.trace("API.WS.Client-接收数据中: 大小 \(ChunkTool.formatByteSize(dataChunk.readableBytes)) \(context.channel.clientAddrInfo)")
+        let loopBound = context.loopBound
+        return context.eventLoop.submitResult { () throws(Failure) in
+            logger?.debug("接收数据中，进行解密", metadata: [
+                "data": .stringConvertible(dataChunk),
+                "client_addr": .string(loopBound.value.channel.clientAddrInfo)
+            ])
             return try required(throws: Errcase.responseDecryptFailed) {
                 try Crypto.Symm.decrypt(.init(buffer: dataChunk), key: key).get()
             }
@@ -40,14 +48,12 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
     }
     
     func connectionStart(context: ChannelHandlerContext) -> EventLoopRes<Void, Errcase> {
-        logger?.debug("API.WS.Client-连线建立: \(context.channel.clientAddrInfo)")
+        logger?.debug("连线建立", metadata: ["client_addr": .string(context.channel.clientAddrInfo)])
         return context.eventLoop.makeSucceededVoidResult()
     }
     
     func connectionEnd(context: ChannelHandlerContext) -> EventLoopRes<Void, Errcase> {
-        logger?.debug("API.WS.Client-连线结束: \(context.channel.clientAddrInfo)")
+        logger?.debug("连线结束", metadata: ["client_addr": .string(context.channel.clientAddrInfo)])
         return context.eventLoop.makeSucceededVoidResult()
     }
 }
-
-extension WebSocketFrameEncoder: @unchecked @retroactive Sendable {}

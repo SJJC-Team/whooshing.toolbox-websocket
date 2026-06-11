@@ -1,5 +1,6 @@
 import WhooshingClient
 import Logging
+import LoggingAdvanced
 import ErrorHandle
 
 /// 基于 WhooshingClient 实现的 HTTPS 模块 WebSocket 客户端封装，
@@ -42,6 +43,12 @@ public final class HttpsWebSocket: WhooshingWebSocket, Sendable {
         configuration: WebSocketClient.Configuration = .init(),
         onUpgrade: @Sendable @escaping (WebSocket) -> ()
     ) async throws(Failure) {
+        logger?.info("HTTPS.WS.Client-建立连线中", metadata: ["url": .data(url)])
+        logger?.debug("操作参数", metadata: [
+            "headers": .stringConvertible(headers),
+            "configs": .stringConvertible(configuration)
+        ])
+        
         try await required(throws: Errcase.wsConnectFailed) {
             try await WebSocket.connect(
                 to: url.string,
@@ -51,5 +58,7 @@ public final class HttpsWebSocket: WhooshingWebSocket, Sendable {
                 onUpgrade: onUpgrade
             ).get()
         }
+        
+        logger?.info("连线建立成功")
     }
 }
