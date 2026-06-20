@@ -6,3 +6,4 @@
 @_documentation(visibility: internal) @_exported import class NIOCore.EventLoopFuture
 @_documentation(visibility: internal) @_exported import struct NIOHTTP1.HTTPHeaders
 @_documentation(visibility: internal) @_exported import struct Foundation.URL
+@_exported import WhooshingClient

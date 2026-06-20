@@ -1,13 +1,6 @@
-import WhooshingClient
-import ErrorHandle
-import Logging
-import LoggingAdvanced
-import Cryptos
-import NIOCore
-import NIOHTTP1
-import NIOExtras
-import NIOAdvanced
 import NIOWebSocket
+import WhooshingClient
+import Foundation
 
 /// 定义 WebSocket 客户端协议，支持异步与基于事件循环的连接方式。
 ///

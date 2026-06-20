@@ -29,7 +29,7 @@ WhooshingWebSocket 是 Whooshing 系统中的 **WebSocket 客户端封装模块*
 在你的 Package.swift 加入：
 
 ``` swift
-.package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-websocket.git", from: "1.1.5")
+.package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-websocket.git", from: "1.1.6")
 ```
 
 并在 target 中添加：
