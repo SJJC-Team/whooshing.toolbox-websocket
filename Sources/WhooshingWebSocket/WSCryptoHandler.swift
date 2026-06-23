@@ -21,7 +21,7 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
                 "data": .stringConvertible(dataChunk),
                 "client_addr": .string(loopBound.value.channel.clientAddrInfo)
             ])
-            return try required(throws: Errcase.requestEncryptFailed) {
+            return try required(throws: Errcase.requestEncryptFailed, category: .internal) {
                 try loopBound.value.channel.allocator.buffer(data: Crypto.Symm.encrypt(dataChunk, key: key.key).get())
             }
         }
@@ -35,7 +35,7 @@ struct WSCryptoHandler: WSIOHandler, Sendable {
                 "data": .stringConvertible(dataChunk),
                 "client_addr": .string(loopBound.value.channel.clientAddrInfo)
             ])
-            return try required(throws: Errcase.responseDecryptFailed) {
+            return try required(throws: Errcase.responseDecryptFailed, category: .internal) {
                 try Crypto.Symm.decrypt(.init(buffer: dataChunk), key: key.key).get()
             }
         }

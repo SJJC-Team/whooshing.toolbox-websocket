@@ -145,11 +145,11 @@ public extension WhooshingWebSocket {
 extension WhooshingWebSocket {
     @usableFromInline
     func firstPing(uri: WebURI) async throws(Failure) {
-        let res = try await required(throws: Errcase.pingFailed) {
+        let res = try await required(throws: Errcase.pingFailed, category: .inherit) {
             try await client.get(uri)
         }
         guard res.status == .switchingProtocols else {
-            throw Errcase.pingFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)").metadata(["status_code": .stringConvertible(res.status)])
+            throw Errcase.pingFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)", category: .internal).metadata(["status_code": .stringConvertible(res.status)])
         }
     }
     
@@ -161,12 +161,12 @@ extension WhooshingWebSocket {
         headers.replaceOrAdd(name: "sec-websocket-key", value: Crypto.randomDataGenerate(length: 16).base64EncodedString())
         headers.replaceOrAdd(name: "sec-websocket-version", value: "13")
 
-        let upgradeRes = try await required(throws: Errcase.upgradeFailed) {
+        let upgradeRes = try await required(throws: Errcase.upgradeFailed, category: .external(suggestions: ["请检查您的网络连接并重试"])) {
             try await client.get(uri, headers: headers)
         }
 
         guard upgradeRes.status == .switchingProtocols else {
-            throw Errcase.upgradeFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)").metadata(["status_code": .stringConvertible(upgradeRes.status)])
+            throw Errcase.upgradeFailed.d("预期状态为 \(HTTPResponseStatus.switchingProtocols)", category: .internal).metadata(["status_code": .stringConvertible(upgradeRes.status)])
         }
     }
 
@@ -176,11 +176,11 @@ extension WhooshingWebSocket {
         onUpgrade: @Sendable @escaping (WebSocket) -> ()
     ) async throws(Failure) {
         guard let channel = client.channel else {
-            throw Errcase.internalFailure.d("TCP 连接不存在，无法创建 WebSocket 连接")
+            throw Errcase.internalFailure.d("TCP 连接不存在，无法创建 WebSocket 连接", category: .internal)
         }
 
         guard let key = client.key else {
-            throw Errcase.internalFailure.d("密钥不存在")
+            throw Errcase.internalFailure.d("密钥不存在", category: .internal)
         }
 
         let ioHandler = WSCryptoHandler(key: key, logger: self.logger?.derive(subId: "handler.crypto"))
@@ -188,11 +188,11 @@ extension WhooshingWebSocket {
         
         self.logger?.debug("\(Self.loggerLabel)-在 TCP Channel 中建立 WebSocket Handler，并移除原有的 Client Handler")
         
-        try await required(throws: Errcase.tcpHandlerRemoveFailed) {
+        try await required(throws: Errcase.tcpHandlerRemoveFailed, category: .inherit) {
             try await client.removeHTTPHandlers().get()
         }
         
-        try await required(throws: Errcase.wsHandlerAddFailed) {
+        try await required(throws: Errcase.wsHandlerAddFailed, category: .inherit) {
             try await channel.pipeline.addHandlers([
                 wsHandler,
                 WebSocketFrameEncoder(),

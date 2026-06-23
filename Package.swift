@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "WhooshingWebSocket", targets: ["WhooshingWebSocket"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-client.git", from: "1.3.0"),
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-client.git", from: "1.3.1"),
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.78.0"),
         .package(url: "https://github.com/apple/swift-nio-extras.git", from: "1.16.0"),
         .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.24.0"),

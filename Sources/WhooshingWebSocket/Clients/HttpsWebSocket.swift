@@ -49,7 +49,7 @@ public final class HttpsWebSocket: WhooshingWebSocket, Sendable {
             "configs": .stringConvertible(configuration)
         ])
         
-        try await required(throws: Errcase.wsConnectFailed) {
+        try await required(throws: Errcase.wsConnectFailed, category: .external(suggestions: ["请检查您的网络连接并重试"])) {
             try await WebSocket.connect(
                 to: url.string,
                 headers: headers,
